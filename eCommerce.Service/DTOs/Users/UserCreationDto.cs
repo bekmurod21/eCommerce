@@ -14,6 +14,7 @@ namespace eCommerce.Service.DTOs.Users
         public string Email { get; set; }
 
         [MinLength(8)]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
         public UserRole Role { get; set; } = UserRole.User;
     }
