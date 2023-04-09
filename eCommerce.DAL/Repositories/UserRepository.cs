@@ -1,5 +1,7 @@
-﻿using eCommerce.DAL.IRepositories;
+﻿using eCommerce.DAL.Contexts;
+using eCommerce.DAL.IRepositories;
 using eCommerce.Domain.Entities.Users;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +12,17 @@ namespace eCommerce.DAL.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        public ValueTask<bool> DeleteAsync(long id)
+        private readonly AppDbContext appDbContext = new AppDbContext();
+        public async ValueTask<bool> DeleteAsync(long id)
         {
-            throw new NotImplementedException();
+            User entity = await appDbContext.Users.FirstOrDefaultAsync(user => user.Id == id);
+            if (entity is null)
+            {
+                return false;
+            }
+            this.appDbContext.Remove(entity);
+            await this.appDbContext.SaveChangesAsync();
+            return true;
         }
 
         public IQueryable<User> GetAllAsync(Predicate<User> predicate = null)
