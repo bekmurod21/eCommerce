@@ -1,10 +1,6 @@
 ﻿using eCommerce.Domain.Commons;
 using eCommerce.Domain.Entities.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace eCommerce.Domain.Entities.Users
 {
@@ -16,7 +12,11 @@ namespace eCommerce.Domain.Entities.Users
         public string Phone { get; set; }
         public DateTime OrderTime { get; set; }
         public PaymentType Payment { get; set; }
+
+        [Required, EmailAddress]
         public string Email { get; set; }
+
+        [MinLength(8)]
         public string Password { get; set; }
     }
 }
