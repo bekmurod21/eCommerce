@@ -1,38 +1,51 @@
-﻿using eCommerce.DAL.IRepositories;
+﻿using eCommerce.DAL.Contexts;
+using eCommerce.DAL.IRepositories;
 using eCommerce.Domain.Entities.Products;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace eCommerce.DAL.Repositories
 {
     public class ProductRepository : IProductRepository
     {
-        public ValueTask<bool> DeleteAsync(long id)
+        private readonly AppDbContext appDbContext = new AppDbContext();
+        public async ValueTask<bool> DeleteAsync(long id)
         {
-            throw new NotImplementedException();
+            Product entity = await appDbContext.Products.FirstOrDefaultAsync(product => product.Id == id);
+            if (entity is null)
+                return false;
+            appDbContext.Products.Remove(entity);
+            await appDbContext.SaveChangesAsync();
+            return true;
         }
 
         public IQueryable<Product> GetAllAsync(Predicate<Product> predicate = null)
         {
-            throw new NotImplementedException();
+            if (predicate is null)
+            {
+                return appDbContext.Products;
+            }
+            return this.appDbContext.Products.AsEnumerable().Where(product => predicate(product)).AsQueryable();
         }
 
-        public ValueTask<Product> GetAsync(Predicate<Product> predicate = null)
+        public async ValueTask<Product> GetAsync(Predicate<Product> predicate = null)
         {
-            throw new NotImplementedException();
+            var products = await appDbContext.Products.ToListAsync();
+            return products.FirstOrDefault(product => predicate(product));
         }
 
-        public ValueTask<Product> InsertAsync(Product product)
+        public async ValueTask<Product> InsertAsync(Product product)
         {
-            throw new NotImplementedException();
+            var addedProduct = await appDbContext.Products.AddAsync(product);
+            await appDbContext.SaveChangesAsync();
+            return addedProduct.Entity;
         }
 
-        public ValueTask<Product> UpdateAsync(Product product)
+        public async ValueTask<Product> UpdateAsync(Product product)
         {
-            throw new NotImplementedException();
+            EntityEntry<Product> entity = this.appDbContext.Products.Update(product);
+            await appDbContext.SaveChangesAsync();
+            return entity.Entity;
         }
     }
 }

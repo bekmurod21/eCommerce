@@ -2,11 +2,7 @@
 using eCommerce.DAL.IRepositories;
 using eCommerce.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace eCommerce.DAL.Repositories
 {
@@ -20,29 +16,39 @@ namespace eCommerce.DAL.Repositories
             {
                 return false;
             }
-            this.appDbContext.Remove(entity);
-            await this.appDbContext.SaveChangesAsync();
+            appDbContext.Remove(entity);
+            await appDbContext.SaveChangesAsync();
             return true;
         }
 
         public IQueryable<User> GetAllAsync(Predicate<User> predicate = null)
         {
-            throw new NotImplementedException();
+            if (predicate is null)
+            {
+                return appDbContext.Users;
+            }
+            return this.appDbContext.Users.AsEnumerable().Where(user => predicate(user)).AsQueryable();
+
         }
 
-        public ValueTask<User> GetAsync(Predicate<User> predicate = null)
+        public async ValueTask<User> GetAsync(Predicate<User> predicate = null)
         {
-            throw new NotImplementedException();
+            var users = await appDbContext.Users.ToListAsync();
+            return users.FirstOrDefault(user => predicate(user));
         }
 
-        public ValueTask<User> InsertAsync(User user)
+        public async ValueTask<User> InsertAsync(User user)
         {
-            throw new NotImplementedException();
+            var addedUser = await appDbContext.Users.AddAsync(user);
+            await appDbContext.SaveChangesAsync();
+            return addedUser.Entity;
         }
 
-        public ValueTask<User> UpdateAsync(User user)
+        public async ValueTask<User> UpdateAsync(User user)
         {
-            throw new NotImplementedException();
+            EntityEntry<User> entity = this.appDbContext.Users.Update(user);
+            await appDbContext.SaveChangesAsync();
+            return entity.Entity;
         }
     }
 }
