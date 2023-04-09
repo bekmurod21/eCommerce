@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace eCommerce.Domain.Entities.Orders
+namespace eCommerce.Domain.Entities.Enums
 {
-    public class Order
+    public enum PaymentType
     {
+        Cash = 10,
+        Online = 20,
     }
 }
