@@ -1,10 +1,9 @@
 ﻿using eCommerce.Domain.Commons;
 using eCommerce.Domain.Entities.Enums;
-using System.ComponentModel.DataAnnotations;
 
-namespace eCommerce.Domain.Entities.Users
+namespace eCommerce.Service.DTOs.Users
 {
-    public class User : Auditable
+    public class UserDto : Auditable
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -12,11 +11,7 @@ namespace eCommerce.Domain.Entities.Users
         public string Phone { get; set; }
         public DateTime OrderTime { get; set; }
         public PaymentType Payment { get; set; }
-
-        [Required, EmailAddress]
         public string Email { get; set; }
-
-        [MinLength(8)]
         public string Password { get; set; }
         public UserRole Role { get; set; } = UserRole.User;
     }
